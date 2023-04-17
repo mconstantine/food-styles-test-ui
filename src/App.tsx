@@ -1,7 +1,9 @@
+import { RecoilRoot } from "recoil";
 import "./App.css";
 import { Filters } from "./components/Filters";
-import { TextInput } from "./components/TextInput";
 import { TodoList } from "./components/TodoList";
+import { CreateTodoForm } from "./components/CreateTodoForm";
+import { Suspense } from "react";
 
 function App() {
   return (
@@ -9,9 +11,13 @@ function App() {
       <div className="card">
         <img src="todo-list.svg" alt="Todo List" />
         <h1>Todo List</h1>
-        <TextInput />
-        <TodoList />
-        <Filters />
+        <RecoilRoot>
+          <CreateTodoForm />
+          <Suspense fallback="Loading…">
+            <TodoList />
+          </Suspense>
+          <Filters />
+        </RecoilRoot>
       </div>
     </div>
   );

@@ -9,10 +9,9 @@
 }
 
 .Todo input {
-  width: 1px;
-  height: 1px;
+  width: 0px;
+  height: 0px;
   margin: 0;
-  transform: translateX(100vw);
 }
 
 .Todo label::before {
@@ -36,6 +35,18 @@
 }
 
 .Todo .delete-button {
+  min-width: 32px;
+  min-height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background-color: transparent;
   border-style: none;
+  opacity: 0;
+  transition: opacity 150ms linear;
+  cursor: pointer;
+}
+
+.Todo:hover .delete-button {
+  opacity: 1;
 }

@@ -1,5 +1,4 @@
 .TodoList {
   margin-top: 1.5em;
-  overflow: auto;
   height: calc(2.5em * 5);
 }

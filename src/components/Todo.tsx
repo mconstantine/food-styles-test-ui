@@ -1,6 +1,9 @@
-import { ChangeEventHandler } from "react";
+import { ChangeEventHandler, MouseEventHandler, useEffect } from "react";
 import "./Todo.css";
 import deleteTodoButtonImage from "../assets/delete-todo-button.svg";
+import { useCommand } from "../effects/useCommand";
+import { Todo as ITodo, todoListState } from "../state";
+import { useSetRecoilState } from "recoil";
 
 interface Props {
   id: number;
@@ -9,9 +12,117 @@ interface Props {
 }
 
 export function Todo(props: Props) {
+  const setTodoList = useSetRecoilState(todoListState);
+
+  const [deleteTodoRequest, deleteTodo] = useCommand<void, ITodo>({
+    path: `/todos/${props.id}/`,
+    method: "DELETE",
+  });
+
+  const [markTodoCompletedRequest, markTodoCompleted] = useCommand<void, ITodo>(
+    {
+      path: `/todos/${props.id}/mark-completed/`,
+      method: "PUT",
+    }
+  );
+
+  const [markTodoUncompletedRequest, markTodoUncompleted] = useCommand<
+    void,
+    ITodo
+  >({
+    path: `/todos/${props.id}/mark-uncompleted/`,
+    method: "PUT",
+  });
+
   const onChange: ChangeEventHandler<HTMLInputElement> = (event) => {
-    console.log(`TODO: ${event.currentTarget.checked}`);
+    if (event.currentTarget.checked) {
+      markTodoCompleted();
+    } else {
+      markTodoUncompleted();
+    }
   };
+
+  const onDeleteButtonClick: MouseEventHandler<HTMLButtonElement> = () => {
+    deleteTodo();
+  };
+
+  const isDeleteButtonDisabled = (() => {
+    switch (deleteTodoRequest.status) {
+      case "idle":
+        return false;
+      case "loading":
+        return true;
+      case "success":
+        return false;
+      case "failure":
+        return true;
+    }
+  })();
+
+  const isMarkCompletedRequestBlocked = (() => {
+    switch (markTodoCompletedRequest.status) {
+      case "idle":
+        return false;
+      case "loading":
+        return true;
+      case "success":
+        return false;
+      case "failure":
+        return true;
+    }
+  })();
+
+  const isMarkUncompletedRequestBlocked = (() => {
+    switch (markTodoUncompletedRequest.status) {
+      case "idle":
+        return false;
+      case "loading":
+        return true;
+      case "success":
+        return false;
+      case "failure":
+        return true;
+    }
+  })();
+
+  const isCheckboxDisabled =
+    isMarkCompletedRequestBlocked || isMarkUncompletedRequestBlocked;
+
+  useEffect(() => {
+    if (deleteTodoRequest.status === "success") {
+      setTodoList((todoList) =>
+        todoList.filter((todo) => todo.id !== deleteTodoRequest.data.id)
+      );
+    }
+  }, [deleteTodoRequest]);
+
+  useEffect(() => {
+    if (markTodoCompletedRequest.status === "success") {
+      setTodoList((todoList) =>
+        todoList.map((todo) => {
+          if (todo.id === markTodoCompletedRequest.data.id) {
+            return markTodoCompletedRequest.data;
+          } else {
+            return todo;
+          }
+        })
+      );
+    }
+  }, [markTodoCompletedRequest]);
+
+  useEffect(() => {
+    if (markTodoUncompletedRequest.status === "success") {
+      setTodoList((todoList) =>
+        todoList.map((todo) => {
+          if (todo.id === markTodoUncompletedRequest.data.id) {
+            return markTodoUncompletedRequest.data;
+          } else {
+            return todo;
+          }
+        })
+      );
+    }
+  }, [markTodoUncompletedRequest]);
 
   return (
     <div className="Todo" role="listitem">
@@ -22,10 +133,15 @@ export function Todo(props: Props) {
           type="checkbox"
           checked={props.isDone}
           onChange={onChange}
+          disabled={isCheckboxDisabled}
         />
         <label htmlFor={`todo-${props.id}`}>{props.title}</label>
       </div>
-      <button className="delete-button">
+      <button
+        className="delete-button"
+        onClick={onDeleteButtonClick}
+        disabled={isDeleteButtonDisabled}
+      >
         <img src={deleteTodoButtonImage} alt="Delete todo" />
       </button>
     </div>

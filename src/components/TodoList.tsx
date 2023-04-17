@@ -1,13 +1,21 @@
+import { useRecoilValue } from "recoil";
 import { Todo } from "./Todo";
 import "./TodoList.css";
+import { todoListState } from "../state";
 
 export function TodoList() {
+  const todoList = useRecoilValue(todoListState);
+
   return (
     <div className="TodoList" role="list">
-      <Todo id={1} title="Something to be done" isDone={true} />
-      <Todo id={2} title="Something to be done" isDone={false} />
-      <Todo id={3} title="Something to be done" isDone={false} />
-      <Todo id={4} title="Something to be done" isDone={false} />
+      {todoList.map((todo) => (
+        <Todo
+          key={todo.id}
+          id={todo.id}
+          title={todo.title}
+          isDone={todo.isDone}
+        />
+      ))}
     </div>
   );
 }
