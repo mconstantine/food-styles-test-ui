@@ -8,10 +8,9 @@ interface CreateTodoInput {
   title: string;
 }
 
-// TODO: handle errors
 export function CreateTodoForm() {
   const [newTodoTitle, setNewTodoTitle] = useState("");
-  const setTodoList = useSetRecoilState(todoListState);
+  const setTodoListState = useSetRecoilState(todoListState);
 
   const [createTodoRequest, createTodo] = useCommand<CreateTodoInput, Todo>({
     path: "/todos/",
@@ -42,7 +41,18 @@ export function CreateTodoForm() {
 
   useEffect(() => {
     if (createTodoRequest.status === "success") {
-      setTodoList((list) => [createTodoRequest.data, ...list]);
+      setTodoListState((state) => {
+        switch (state.status) {
+          case "success":
+            return {
+              ...state,
+              todos: [createTodoRequest.data, ...state.todos],
+            };
+          case "failure":
+            return state;
+        }
+      });
+
       setNewTodoTitle("");
     }
   }, [createTodoRequest]);

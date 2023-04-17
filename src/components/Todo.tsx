@@ -11,9 +11,8 @@ interface Props {
   isDone: boolean;
 }
 
-// TODO: handle errors
 export function Todo(props: Props) {
-  const setTodoList = useSetRecoilState(todoListState);
+  const setTodoListState = useSetRecoilState(todoListState);
 
   const [deleteTodoRequest, deleteTodo] = useCommand<void, ITodo>({
     path: `/todos/${props.id}/`,
@@ -91,37 +90,63 @@ export function Todo(props: Props) {
 
   useEffect(() => {
     if (deleteTodoRequest.status === "success") {
-      setTodoList((todoList) =>
-        todoList.filter((todo) => todo.id !== deleteTodoRequest.data.id)
-      );
+      setTodoListState((state) => {
+        switch (state.status) {
+          case "failure":
+            return state;
+          case "success":
+            return {
+              ...state,
+              todos: state.todos.filter(
+                (todo) => todo.id !== deleteTodoRequest.data.id
+              ),
+            };
+        }
+      });
     }
   }, [deleteTodoRequest]);
 
   useEffect(() => {
     if (markTodoCompletedRequest.status === "success") {
-      setTodoList((todoList) =>
-        todoList.map((todo) => {
-          if (todo.id === markTodoCompletedRequest.data.id) {
-            return markTodoCompletedRequest.data;
-          } else {
-            return todo;
-          }
-        })
-      );
+      setTodoListState((state) => {
+        switch (state.status) {
+          case "failure":
+            return state;
+          case "success":
+            return {
+              ...state,
+              todos: state.todos.map((todo) => {
+                if (todo.id === markTodoCompletedRequest.data.id) {
+                  return markTodoCompletedRequest.data;
+                } else {
+                  return todo;
+                }
+              }),
+            };
+        }
+      });
     }
   }, [markTodoCompletedRequest]);
 
   useEffect(() => {
     if (markTodoUncompletedRequest.status === "success") {
-      setTodoList((todoList) =>
-        todoList.map((todo) => {
-          if (todo.id === markTodoUncompletedRequest.data.id) {
-            return markTodoUncompletedRequest.data;
-          } else {
-            return todo;
-          }
-        })
-      );
+      setTodoListState((state) => {
+        switch (state.status) {
+          case "failure":
+            return state;
+          case "success":
+            return {
+              ...state,
+              todos: state.todos.map((todo) => {
+                if (todo.id === markTodoUncompletedRequest.data.id) {
+                  return markTodoUncompletedRequest.data;
+                } else {
+                  return todo;
+                }
+              }),
+            };
+        }
+      });
     }
   }, [markTodoUncompletedRequest]);
 

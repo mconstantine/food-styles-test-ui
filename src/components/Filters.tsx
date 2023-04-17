@@ -5,20 +5,20 @@ import { MouseEventHandler, useState } from "react";
 import { todoListState } from "../state";
 
 export function Filters() {
-  const setTodoList = useSetRecoilState(todoListState);
+  const setTodoListState = useSetRecoilState(todoListState);
   const [currentFilter, setCurrentFilter] = useState<ListTodosFilter>(
     ListTodosFilter.All
   );
 
   const makeFilterClickCallback = (filter: ListTodosFilter) => {
     return () => {
-      listTodos(filter).then(
-        (todos) => {
-          setTodoList(todos);
-          setCurrentFilter(filter);
-        },
-        () => console.log("TODO: handle error")
-      );
+      listTodos(filter).then((todos) => {
+        setTodoListState({
+          status: "success",
+          todos,
+        });
+        setCurrentFilter(filter);
+      });
     };
   };
 

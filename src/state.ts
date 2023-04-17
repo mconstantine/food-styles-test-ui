@@ -7,12 +7,36 @@ export interface Todo {
   isDone: boolean;
 }
 
-export const todoListState: RecoilState<Todo[]> = atom({
+interface FailedTodoListState {
+  status: "failure";
+}
+
+interface SuccessfulTodoListState {
+  status: "success";
+  todos: Todo[];
+}
+
+type TodoListState = FailedTodoListState | SuccessfulTodoListState;
+
+export const todoListState: RecoilState<TodoListState> = atom<TodoListState>({
   key: "todoListState",
-  default: [] as Todo[],
+  default: {
+    status: "success",
+    todos: [],
+  },
   effects: [
     ({ setSelf }) => {
-      setSelf(listTodos(ListTodosFilter.All));
+      setSelf(
+        listTodos(ListTodosFilter.All).then(
+          (todos) => ({
+            status: "success",
+            todos,
+          }),
+          () => ({
+            status: "failure",
+          })
+        )
+      );
     },
   ],
 });
