@@ -1,10 +1,24 @@
+import { useSetRecoilState } from "recoil";
+import { ListTodosFilter, listTodos } from "../utils/listTodos";
 import "./Filters.css";
-import { MouseEventHandler } from "react";
+import { MouseEventHandler, useState } from "react";
+import { todoListState } from "../state";
 
 export function Filters() {
-  const makeFilterClickCallback = (filterName: string) => {
+  const setTodoList = useSetRecoilState(todoListState);
+  const [currentFilter, setCurrentFilter] = useState<ListTodosFilter>(
+    ListTodosFilter.All
+  );
+
+  const makeFilterClickCallback = (filter: ListTodosFilter) => {
     return () => {
-      console.log(`TODO: ${filterName}`);
+      listTodos(filter).then(
+        (todos) => {
+          setTodoList(todos);
+          setCurrentFilter(filter);
+        },
+        () => console.log("TODO: handle error")
+      );
     };
   };
 
@@ -13,21 +27,14 @@ export function Filters() {
       <p>
         <span>Show:</span>
         &nbsp;
-        <Filter
-          isCurrent
-          label="All"
-          onClick={makeFilterClickCallback("all")}
-        />
-        &nbsp;
-        <Filter
-          label="Completed"
-          onClick={makeFilterClickCallback("completed")}
-        />
-        &nbsp;
-        <Filter
-          label="Incompleted"
-          onClick={makeFilterClickCallback("uncompleted")}
-        />
+        {Object.entries(ListTodosFilter).map(([label, key]) => (
+          <Filter
+            key={key}
+            isCurrent={key === currentFilter}
+            label={label}
+            onClick={makeFilterClickCallback(key)}
+          />
+        ))}
       </p>
     </div>
   );

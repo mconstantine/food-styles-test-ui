@@ -11,6 +11,7 @@ interface Props {
   isDone: boolean;
 }
 
+// TODO: handle errors
 export function Todo(props: Props) {
   const setTodoList = useSetRecoilState(todoListState);
 

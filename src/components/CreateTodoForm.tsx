@@ -8,6 +8,7 @@ interface CreateTodoInput {
   title: string;
 }
 
+// TODO: handle errors
 export function CreateTodoForm() {
   const [newTodoTitle, setNewTodoTitle] = useState("");
   const setTodoList = useSetRecoilState(todoListState);
@@ -49,6 +50,7 @@ export function CreateTodoForm() {
   return (
     <form onSubmit={onSubmit}>
       <TextInput
+        autoFocus
         type="text"
         placeholder="Add a new todo"
         required

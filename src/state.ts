@@ -1,5 +1,5 @@
 import { RecoilState, atom } from "recoil";
-import { apiUrl } from "./constants/apiUrl";
+import { ListTodosFilter, listTodos } from "./utils/listTodos";
 
 export interface Todo {
   id: number;
@@ -12,9 +12,7 @@ export const todoListState: RecoilState<Todo[]> = atom({
   default: [] as Todo[],
   effects: [
     ({ setSelf }) => {
-      setSelf(
-        window.fetch(`${apiUrl}/todos/`).then((response) => response.json())
-      );
+      setSelf(listTodos(ListTodosFilter.All));
     },
   ],
 });
