@@ -1,0 +1,13 @@
+.TextInput {
+  width: 100%;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  border-style: none;
+  border-bottom: 1px solid #d7dae0;
+  padding: 10px 0;
+}
+
+.TextInput::placeholder {
+  color: var(--color-cool-grey);
+}

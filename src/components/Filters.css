@@ -1,0 +1,28 @@
+.Filters {
+  margin-top: 2em;
+}
+
+.Filters p {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.Filters span {
+  opacity: 0.59;
+}
+
+.Filter {
+  opacity: 1;
+  color: var(--color-blue);
+  margin-left: 16px;
+}
+
+.Filter + .Filter {
+  margin-left: 10px;
+}
+
+.Filter.current {
+  color: inherit;
+  text-decoration: none;
+  cursor: default;
+}

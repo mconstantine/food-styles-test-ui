@@ -10,4 +10,21 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+
+  --color-cool-grey: #9ea3b2;
+  --color-white: #e1e1e1;
+  --color-pale-grey: #f6f7f8;
+  --color-black-10: rgba(0, 0, 0, 0.1);
+  --color-dark-blue-grey: #1f2a4b;
+  --color-cool-grey-two: #a1a4ad;
+  --color-blue: #4a77e5;
+}
+
+body {
+  color: var(--dark-blue-grey);
+  margin: 0;
+}
+
+h1 {
+  font-size: 22px;
 }

@@ -1,0 +1,19 @@
+.App {
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--color-pale-grey);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.App .card {
+  width: 90vw;
+  height: 90vh;
+  max-width: 440px;
+  max-height: 440px;
+  background-color: #fff;
+  padding: 35px 30px;
+  border-radius: 5px;
+  box-shadow: 0 2px 16px 0 var(--color-black-10);
+}
