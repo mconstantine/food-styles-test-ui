@@ -36,13 +36,13 @@ type HttpRequest<T> =
 
 export function useCommand<I, O>(
   command: Omit<HttpCommand<I>, "input">
-): [HttpRequest<O>, (input: I) => void] {
+): [HttpRequest<O>, (input: I) => Promise<O>] {
   const [request, setRequest] = useState<HttpRequest<O>>({ status: "idle" });
 
   const makeRequest = (input: I) => {
     setRequest({ status: "loading" });
 
-    window
+    return window
       .fetch(`${apiUrl}${command.path}`, {
         method: command.method,
         body: JSON.stringify(input),
@@ -63,8 +63,10 @@ export function useCommand<I, O>(
         (response) => {
           setRequest({
             status: "success",
-            data: response as O,
+            data: response,
           });
+
+          return response;
         },
         () => {
           setRequest({ status: "failure" });

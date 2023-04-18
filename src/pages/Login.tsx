@@ -1,12 +1,7 @@
 import { useSetRecoilState } from "recoil";
 import { TextInput } from "../components/TextInput";
 import { AuthTokens, appState } from "../state";
-import {
-  FormEventHandler,
-  MouseEventHandler,
-  useEffect,
-  useState,
-} from "react";
+import { FormEventHandler, MouseEventHandler, useState } from "react";
 import { useCommand } from "../effects/useCommand";
 import { ListTodosFilter, listTodos } from "../utils/listTodos";
 
@@ -49,23 +44,32 @@ export default function Login() {
 
   const onSubmit: FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
-    login(input);
-  };
-
-  useEffect(() => {
-    if (loginRequest.status === "success") {
-      listTodos(ListTodosFilter.All, loginRequest.data).then((todos) => {
+    login(input).then((authTokens) => {
+      listTodos(ListTodosFilter.All, authTokens).then((todos) => {
         setAppState({
           type: "logged_in",
-          authTokens: loginRequest.data,
+          authTokens: authTokens,
           todoList: {
             status: "success",
             todos,
           },
         });
       });
+    });
+  };
+
+  const isUIDisabled = (() => {
+    switch (loginRequest.status) {
+      case "idle":
+        return false;
+      case "loading":
+        return true;
+      case "failure":
+        return false;
+      case "success":
+        return false;
     }
-  }, [loginRequest]);
+  })();
 
   return (
     <>
@@ -77,19 +81,21 @@ export default function Login() {
           placeholder="Email"
           value={input.email}
           onChange={onEmailChange}
+          disabled={isUIDisabled}
         />
         <TextInput
           type="password"
           placeholder="Password"
           value={input.password}
           onChange={onPasswordChange}
+          disabled={isUIDisabled}
         />
         <p>
           <a href="#" onClick={onSignUpLinkClick}>
             Don’t have an account? Sign up.
           </a>
         </p>
-        <input type="submit" value="Log In" />
+        <input type="submit" value="Log In" disabled={isUIDisabled} />
       </form>
     </>
   );

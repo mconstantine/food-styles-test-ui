@@ -1,4 +1,4 @@
-import { FormEventHandler, useEffect, useState } from "react";
+import { FormEventHandler, useState } from "react";
 import { TextInput } from "./TextInput";
 import { useCommand } from "../effects/useCommand";
 import { useRecoilValue, useSetRecoilState } from "recoil";
@@ -25,7 +25,26 @@ export function CreateTodoForm() {
 
   const onSubmit: FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
-    createTodo({ title: newTodoTitle });
+    createTodo({ title: newTodoTitle }).then((createdTodo) => {
+      setTodoListState((state) => {
+        switch (state.type) {
+          case "anonymous":
+            return state;
+          case "logged_in":
+            switch (state.todoList.status) {
+              case "success":
+                return {
+                  ...state,
+                  todos: [createdTodo, ...state.todoList.todos],
+                };
+              case "failure":
+                return state;
+            }
+        }
+      });
+
+      setNewTodoTitle("");
+    });
   };
 
   const isInputDisabled = (() => {
@@ -40,29 +59,6 @@ export function CreateTodoForm() {
         return true;
     }
   })();
-
-  useEffect(() => {
-    if (createTodoRequest.status === "success") {
-      setTodoListState((state) => {
-        switch (state.type) {
-          case "anonymous":
-            return state;
-          case "logged_in":
-            switch (state.todoList.status) {
-              case "success":
-                return {
-                  ...state,
-                  todos: [createTodoRequest.data, ...state.todoList.todos],
-                };
-              case "failure":
-                return state;
-            }
-        }
-      });
-
-      setNewTodoTitle("");
-    }
-  }, [createTodoRequest]);
 
   return (
     <form onSubmit={onSubmit}>

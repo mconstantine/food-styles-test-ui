@@ -1,4 +1,4 @@
-import { ChangeEventHandler, MouseEventHandler, useEffect } from "react";
+import { ChangeEventHandler, MouseEventHandler } from "react";
 import "./Todo.css";
 import deleteTodoButtonImage from "../assets/delete-todo-button.svg";
 import { useCommand } from "../effects/useCommand";
@@ -40,14 +40,79 @@ export function Todo(props: Props) {
 
   const onChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     if (event.currentTarget.checked) {
-      markTodoCompleted();
+      markTodoCompleted().then((completedTodo) => {
+        setTodoListState((state) => {
+          switch (state.type) {
+            case "anonymous":
+              return state;
+            case "logged_in":
+              switch (state.todoList.status) {
+                case "failure":
+                  return state;
+                case "success":
+                  return {
+                    ...state,
+                    todos: state.todoList.todos.map((todo) => {
+                      if (todo.id === completedTodo.id) {
+                        return completedTodo;
+                      } else {
+                        return todo;
+                      }
+                    }),
+                  };
+              }
+          }
+        });
+      });
     } else {
-      markTodoUncompleted();
+      markTodoUncompleted().then((uncompletedTodo) => {
+        setTodoListState((state) => {
+          switch (state.type) {
+            case "anonymous":
+              return state;
+            case "logged_in":
+              switch (state.todoList.status) {
+                case "failure":
+                  return state;
+                case "success":
+                  return {
+                    ...state,
+                    todos: state.todoList.todos.map((todo) => {
+                      if (todo.id === uncompletedTodo.id) {
+                        return uncompletedTodo;
+                      } else {
+                        return todo;
+                      }
+                    }),
+                  };
+              }
+          }
+        });
+      });
     }
   };
 
   const onDeleteButtonClick: MouseEventHandler<HTMLButtonElement> = () => {
-    deleteTodo();
+    deleteTodo().then((deletedTodo) => {
+      setTodoListState((state) => {
+        switch (state.type) {
+          case "anonymous":
+            return state;
+          case "logged_in":
+            switch (state.todoList.status) {
+              case "failure":
+                return state;
+              case "success":
+                return {
+                  ...state,
+                  todos: state.todoList.todos.filter(
+                    (todo) => todo.id !== deletedTodo.id
+                  ),
+                };
+            }
+        }
+      });
+    });
   };
 
   const isDeleteButtonDisabled = (() => {
@@ -91,83 +156,6 @@ export function Todo(props: Props) {
 
   const isCheckboxDisabled =
     isMarkCompletedRequestBlocked || isMarkUncompletedRequestBlocked;
-
-  useEffect(() => {
-    if (deleteTodoRequest.status === "success") {
-      setTodoListState((state) => {
-        switch (state.type) {
-          case "anonymous":
-            return state;
-          case "logged_in":
-            switch (state.todoList.status) {
-              case "failure":
-                return state;
-              case "success":
-                return {
-                  ...state,
-                  todos: state.todoList.todos.filter(
-                    (todo) => todo.id !== deleteTodoRequest.data.id
-                  ),
-                };
-            }
-        }
-      });
-    }
-  }, [deleteTodoRequest]);
-
-  useEffect(() => {
-    if (markTodoCompletedRequest.status === "success") {
-      setTodoListState((state) => {
-        switch (state.type) {
-          case "anonymous":
-            return state;
-          case "logged_in":
-            switch (state.todoList.status) {
-              case "failure":
-                return state;
-              case "success":
-                return {
-                  ...state,
-                  todos: state.todoList.todos.map((todo) => {
-                    if (todo.id === markTodoCompletedRequest.data.id) {
-                      return markTodoCompletedRequest.data;
-                    } else {
-                      return todo;
-                    }
-                  }),
-                };
-            }
-        }
-      });
-    }
-  }, [markTodoCompletedRequest]);
-
-  useEffect(() => {
-    if (markTodoUncompletedRequest.status === "success") {
-      setTodoListState((state) => {
-        switch (state.type) {
-          case "anonymous":
-            return state;
-          case "logged_in":
-            switch (state.todoList.status) {
-              case "failure":
-                return state;
-              case "success":
-                return {
-                  ...state,
-                  todos: state.todoList.todos.map((todo) => {
-                    if (todo.id === markTodoUncompletedRequest.data.id) {
-                      return markTodoUncompletedRequest.data;
-                    } else {
-                      return todo;
-                    }
-                  }),
-                };
-            }
-        }
-      });
-    }
-  }, [markTodoUncompletedRequest]);
 
   return (
     <div className="Todo" role="listitem">

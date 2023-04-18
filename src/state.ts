@@ -70,12 +70,14 @@ export const appState = atom<AppState>({
       onSet((state) => {
         switch (state.type) {
           case "anonymous":
-            return;
+            return state;
           case "logged_in":
             window.localStorage.setItem(
               "todolist_authTokens",
               JSON.stringify(state.authTokens)
             );
+
+            return state;
         }
       });
     },
