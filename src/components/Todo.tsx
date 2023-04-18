@@ -2,7 +2,7 @@ import { ChangeEventHandler, MouseEventHandler, useEffect } from "react";
 import "./Todo.css";
 import deleteTodoButtonImage from "../assets/delete-todo-button.svg";
 import { useCommand } from "../effects/useCommand";
-import { Todo as ITodo, todoListState } from "../state";
+import { Todo as ITodo, appState } from "../state";
 import { useSetRecoilState } from "recoil";
 
 interface Props {
@@ -12,7 +12,7 @@ interface Props {
 }
 
 export function Todo(props: Props) {
-  const setTodoListState = useSetRecoilState(todoListState);
+  const setTodoListState = useSetRecoilState(appState);
 
   const [deleteTodoRequest, deleteTodo] = useCommand<void, ITodo>({
     path: `/todos/${props.id}/`,
@@ -91,16 +91,21 @@ export function Todo(props: Props) {
   useEffect(() => {
     if (deleteTodoRequest.status === "success") {
       setTodoListState((state) => {
-        switch (state.status) {
-          case "failure":
+        switch (state.type) {
+          case "anonymous":
             return state;
-          case "success":
-            return {
-              ...state,
-              todos: state.todos.filter(
-                (todo) => todo.id !== deleteTodoRequest.data.id
-              ),
-            };
+          case "logged_in":
+            switch (state.todoList.status) {
+              case "failure":
+                return state;
+              case "success":
+                return {
+                  ...state,
+                  todos: state.todoList.todos.filter(
+                    (todo) => todo.id !== deleteTodoRequest.data.id
+                  ),
+                };
+            }
         }
       });
     }
@@ -109,20 +114,25 @@ export function Todo(props: Props) {
   useEffect(() => {
     if (markTodoCompletedRequest.status === "success") {
       setTodoListState((state) => {
-        switch (state.status) {
-          case "failure":
+        switch (state.type) {
+          case "anonymous":
             return state;
-          case "success":
-            return {
-              ...state,
-              todos: state.todos.map((todo) => {
-                if (todo.id === markTodoCompletedRequest.data.id) {
-                  return markTodoCompletedRequest.data;
-                } else {
-                  return todo;
-                }
-              }),
-            };
+          case "logged_in":
+            switch (state.todoList.status) {
+              case "failure":
+                return state;
+              case "success":
+                return {
+                  ...state,
+                  todos: state.todoList.todos.map((todo) => {
+                    if (todo.id === markTodoCompletedRequest.data.id) {
+                      return markTodoCompletedRequest.data;
+                    } else {
+                      return todo;
+                    }
+                  }),
+                };
+            }
         }
       });
     }
@@ -131,20 +141,25 @@ export function Todo(props: Props) {
   useEffect(() => {
     if (markTodoUncompletedRequest.status === "success") {
       setTodoListState((state) => {
-        switch (state.status) {
-          case "failure":
+        switch (state.type) {
+          case "anonymous":
             return state;
-          case "success":
-            return {
-              ...state,
-              todos: state.todos.map((todo) => {
-                if (todo.id === markTodoUncompletedRequest.data.id) {
-                  return markTodoUncompletedRequest.data;
-                } else {
-                  return todo;
-                }
-              }),
-            };
+          case "logged_in":
+            switch (state.todoList.status) {
+              case "failure":
+                return state;
+              case "success":
+                return {
+                  ...state,
+                  todos: state.todoList.todos.map((todo) => {
+                    if (todo.id === markTodoUncompletedRequest.data.id) {
+                      return markTodoUncompletedRequest.data;
+                    } else {
+                      return todo;
+                    }
+                  }),
+                };
+            }
         }
       });
     }

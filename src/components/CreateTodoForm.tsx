@@ -2,7 +2,7 @@ import { FormEventHandler, useEffect, useState } from "react";
 import { TextInput } from "./TextInput";
 import { useCommand } from "../effects/useCommand";
 import { useSetRecoilState } from "recoil";
-import { Todo, todoListState } from "../state";
+import { Todo, appState } from "../state";
 
 interface CreateTodoInput {
   title: string;
@@ -10,7 +10,7 @@ interface CreateTodoInput {
 
 export function CreateTodoForm() {
   const [newTodoTitle, setNewTodoTitle] = useState("");
-  const setTodoListState = useSetRecoilState(todoListState);
+  const setTodoListState = useSetRecoilState(appState);
 
   const [createTodoRequest, createTodo] = useCommand<CreateTodoInput, Todo>({
     path: "/todos/",
@@ -42,14 +42,19 @@ export function CreateTodoForm() {
   useEffect(() => {
     if (createTodoRequest.status === "success") {
       setTodoListState((state) => {
-        switch (state.status) {
-          case "success":
-            return {
-              ...state,
-              todos: [createTodoRequest.data, ...state.todos],
-            };
-          case "failure":
+        switch (state.type) {
+          case "anonymous":
             return state;
+          case "logged_in":
+            switch (state.todoList.status) {
+              case "success":
+                return {
+                  ...state,
+                  todos: [createTodoRequest.data, ...state.todoList.todos],
+                };
+              case "failure":
+                return state;
+            }
         }
       });
 

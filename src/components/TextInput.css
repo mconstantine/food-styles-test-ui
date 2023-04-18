@@ -11,3 +11,14 @@
 .TextInput::placeholder {
   color: var(--color-cool-grey);
 }
+
+.TextInput + .TextInput {
+  margin-top: 1.5em;
+}
+
+.TextInput:focus,
+.TextInput:focus-visible {
+  outline: none;
+  border-bottom-color: var(--color-blue);
+  color: var(--color-blue);
+}

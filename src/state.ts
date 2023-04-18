@@ -1,5 +1,4 @@
-import { RecoilState, atom } from "recoil";
-import { ListTodosFilter, listTodos } from "./utils/listTodos";
+import { atom } from "recoil";
 
 export interface Todo {
   id: number;
@@ -18,25 +17,40 @@ interface SuccessfulTodoListState {
 
 type TodoListState = FailedTodoListState | SuccessfulTodoListState;
 
-export const todoListState: RecoilState<TodoListState> = atom<TodoListState>({
+interface AnonymousUserState {
+  type: "anonymous";
+  activity: "signup" | "login";
+}
+
+interface LoggedInUserState {
+  type: "logged_in";
+  access_token: string;
+  refresh_token: string;
+  todoList: TodoListState;
+}
+
+type AppState = AnonymousUserState | LoggedInUserState;
+
+export const appState = atom<AppState>({
   key: "todoListState",
   default: {
-    status: "success",
-    todos: [],
+    type: "anonymous",
+    activity: "login",
   },
-  effects: [
-    ({ setSelf }) => {
-      setSelf(
-        listTodos(ListTodosFilter.All).then(
-          (todos) => ({
-            status: "success",
-            todos,
-          }),
-          () => ({
-            status: "failure",
-          })
-        )
-      );
-    },
-  ],
+  // TODO: read local storage and set the access token here
+  // effects: [
+  //   ({ setSelf }) => {
+  //     setSelf(
+  //       listTodos(ListTodosFilter.All).then(
+  //         (todos) => ({
+  //           status: "success",
+  //           todos,
+  //         }),
+  //         () => ({
+  //           status: "failure",
+  //         })
+  //       )
+  //     );
+  //   },
+  // ],
 });

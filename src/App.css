@@ -16,3 +16,30 @@
   border-radius: 5px;
   box-shadow: 0 2px 16px 0 var(--color-black-10);
 }
+
+.App .card > h1 + p {
+  margin-top: -0.75em;
+  color: var(--color-cool-grey-two);
+}
+
+.card form p {
+  font-size: 14px;
+  color: var(--color-dark-blue-grey);
+}
+
+input[type="submit"] {
+  width: 100%;
+  min-height: 36px;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  border-radius: 4px;
+  border: solid 1px var(--color-blue);
+  background-color: var(--color-blue);
+  color: #fff;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: 1;
+  font-weight: inherit;
+  text-align: center;
+  margin-top: 3em;
+}
