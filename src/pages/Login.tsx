@@ -45,16 +45,18 @@ export default function Login() {
   const onSubmit: FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
     login(input).then((authTokens) => {
-      listTodos(ListTodosFilter.All, authTokens).then((todos) => {
-        setAppState({
-          type: "logged_in",
-          authTokens: authTokens,
-          todoList: {
-            status: "success",
-            todos,
-          },
+      if (authTokens) {
+        listTodos(ListTodosFilter.All, authTokens).then((todos) => {
+          setAppState({
+            type: "logged_in",
+            authTokens: authTokens,
+            todoList: {
+              status: "success",
+              todos,
+            },
+          });
         });
-      });
+      }
     });
   };
 
@@ -68,6 +70,19 @@ export default function Login() {
         return false;
       case "success":
         return false;
+    }
+  })();
+
+  const error = (() => {
+    switch (loginRequest.status) {
+      case "failure":
+        if (loginRequest.code === 401) {
+          return "Invalid email or password";
+        } else {
+          return "Unexpected error. Please try again";
+        }
+      default:
+        return null;
     }
   })();
 
@@ -96,6 +111,7 @@ export default function Login() {
           </a>
         </p>
         <input type="submit" value="Log In" disabled={isUIDisabled} />
+        {error && <p style={{ color: "red" }}>{error}</p>}
       </form>
     </>
   );

@@ -41,86 +41,92 @@ export function Todo(props: Props) {
   const onChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     if (event.currentTarget.checked) {
       markTodoCompleted().then((completedTodo) => {
-        setTodoListState((state) => {
-          switch (state.type) {
-            case "anonymous":
-              return state;
-            case "logged_in":
-              switch (state.todoList.status) {
-                case "failure":
-                  return state;
-                case "success":
-                  return {
-                    ...state,
-                    todoList: {
-                      ...state.todoList,
-                      todos: state.todoList.todos.map((todo) => {
-                        if (todo.id === completedTodo.id) {
-                          return completedTodo;
-                        } else {
-                          return todo;
-                        }
-                      }),
-                    },
-                  };
-              }
-          }
-        });
+        if (completedTodo) {
+          setTodoListState((state) => {
+            switch (state.type) {
+              case "anonymous":
+                return state;
+              case "logged_in":
+                switch (state.todoList.status) {
+                  case "failure":
+                    return state;
+                  case "success":
+                    return {
+                      ...state,
+                      todoList: {
+                        ...state.todoList,
+                        todos: state.todoList.todos.map((todo) => {
+                          if (todo.id === completedTodo.id) {
+                            return completedTodo;
+                          } else {
+                            return todo;
+                          }
+                        }),
+                      },
+                    };
+                }
+            }
+          });
+        }
       });
     } else {
       markTodoUncompleted().then((uncompletedTodo) => {
-        setTodoListState((state) => {
-          switch (state.type) {
-            case "anonymous":
-              return state;
-            case "logged_in":
-              switch (state.todoList.status) {
-                case "failure":
-                  return state;
-                case "success":
-                  return {
-                    ...state,
-                    todoList: {
-                      ...state.todoList,
-                      todos: state.todoList.todos.map((todo) => {
-                        if (todo.id === uncompletedTodo.id) {
-                          return uncompletedTodo;
-                        } else {
-                          return todo;
-                        }
-                      }),
-                    },
-                  };
-              }
-          }
-        });
+        if (uncompletedTodo) {
+          setTodoListState((state) => {
+            switch (state.type) {
+              case "anonymous":
+                return state;
+              case "logged_in":
+                switch (state.todoList.status) {
+                  case "failure":
+                    return state;
+                  case "success":
+                    return {
+                      ...state,
+                      todoList: {
+                        ...state.todoList,
+                        todos: state.todoList.todos.map((todo) => {
+                          if (todo.id === uncompletedTodo.id) {
+                            return uncompletedTodo;
+                          } else {
+                            return todo;
+                          }
+                        }),
+                      },
+                    };
+                }
+            }
+          });
+        }
       });
     }
   };
 
   const onDeleteButtonClick: MouseEventHandler<HTMLButtonElement> = () => {
     deleteTodo().then((deletedTodo) => {
-      setTodoListState((state) => {
-        switch (state.type) {
-          case "anonymous":
-            return state;
-          case "logged_in":
-            switch (state.todoList.status) {
-              case "failure":
-                return state;
-              case "success":
-                return {
-                  ...state,
-                  todoList: {
-                    ...state.todoList,
-                    todos: state.todoList.todos.filter(
-                      (todo) => todo.id !== deletedTodo.id
-                    ),
-                  },
-                };
-            }
-        }
-      });
+      if (deletedTodo) {
+        setTodoListState((state) => {
+          switch (state.type) {
+            case "anonymous":
+              return state;
+            case "logged_in":
+              switch (state.todoList.status) {
+                case "failure":
+                  return state;
+                case "success":
+                  return {
+                    ...state,
+                    todoList: {
+                      ...state.todoList,
+                      todos: state.todoList.todos.filter(
+                        (todo) => todo.id !== deletedTodo.id
+                      ),
+                    },
+                  };
+              }
+          }
+        });
+      }
     });
   };
 

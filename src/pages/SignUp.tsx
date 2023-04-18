@@ -52,14 +52,16 @@ export default function SignUp() {
     event.preventDefault();
 
     signUp(input).then((authTokens) => {
-      setAppState({
-        type: "logged_in",
-        authTokens,
-        todoList: {
-          status: "success",
-          todos: [],
-        },
-      });
+      if (authTokens) {
+        setAppState({
+          type: "logged_in",
+          authTokens,
+          todoList: {
+            status: "success",
+            todos: [],
+          },
+        });
+      }
     });
   };
 
@@ -73,6 +75,19 @@ export default function SignUp() {
         return false;
       case "success":
         return false;
+    }
+  })();
+
+  const error = (() => {
+    switch (signUpRequest.status) {
+      case "failure":
+        if (signUpRequest.code === 409) {
+          return "A user with this email address already exists";
+        } else {
+          return "Unexpected error. Please try again";
+        }
+      default:
+        return null;
     }
   })();
 
@@ -110,6 +125,7 @@ export default function SignUp() {
           </a>
         </p>
         <input type="submit" value="Sign Up" disabled={isUIDisabled} />
+        {error && <p style={{ color: "red" }}>{error}</p>}
       </form>
     </>
   );

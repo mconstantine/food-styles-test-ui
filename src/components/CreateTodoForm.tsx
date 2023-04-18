@@ -26,27 +26,29 @@ export function CreateTodoForm() {
   const onSubmit: FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
     createTodo({ title: newTodoTitle }).then((createdTodo) => {
-      setTodoListState((state) => {
-        switch (state.type) {
-          case "anonymous":
-            return state;
-          case "logged_in":
-            switch (state.todoList.status) {
-              case "success":
-                return {
-                  ...state,
-                  todoList: {
-                    ...state.todoList,
-                    todos: [createdTodo, ...state.todoList.todos],
-                  },
-                };
-              case "failure":
-                return state;
-            }
-        }
-      });
+      if (createdTodo) {
+        setTodoListState((state) => {
+          switch (state.type) {
+            case "anonymous":
+              return state;
+            case "logged_in":
+              switch (state.todoList.status) {
+                case "success":
+                  return {
+                    ...state,
+                    todoList: {
+                      ...state.todoList,
+                      todos: [createdTodo, ...state.todoList.todos],
+                    },
+                  };
+                case "failure":
+                  return state;
+              }
+          }
+        });
 
-      setNewTodoTitle("");
+        setNewTodoTitle("");
+      }
     });
   };
 

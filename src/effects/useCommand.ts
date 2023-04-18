@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { apiUrl } from "../constants/apiUrl";
 import { AuthTokens } from "../state";
+import { ServerError } from "./ServerError";
 
 type HttpCommandMethod = "POST" | "PUT" | "DELETE";
 
@@ -26,6 +27,7 @@ interface SuccessfulHttpRequest<T> {
 
 interface FailedHttpRequest {
   status: "failure";
+  code: number;
 }
 
 type HttpRequest<T> =
@@ -36,10 +38,10 @@ type HttpRequest<T> =
 
 export function useCommand<I, O>(
   command: Omit<HttpCommand<I>, "input">
-): [HttpRequest<O>, (input: I) => Promise<O>] {
+): [HttpRequest<O>, (input: I) => Promise<O | null>] {
   const [request, setRequest] = useState<HttpRequest<O>>({ status: "idle" });
 
-  const makeRequest = (input: I) => {
+  const makeRequest = (input: I): Promise<O | null> => {
     setRequest({ status: "loading" });
 
     return window
@@ -54,22 +56,46 @@ export function useCommand<I, O>(
         },
       })
       .then(
-        (response) => response.json(),
+        (response) =>
+          new Promise((accept, reject) => {
+            if (Math.floor(response.status / 100) !== 2) {
+              reject(new ServerError(response.status, response.statusText));
+            } else {
+              accept(response.json());
+            }
+          }),
         () => {
-          setRequest({ status: "failure" });
+          setRequest({
+            status: "failure",
+            code: 500,
+          });
         }
       )
       .then(
         (response) => {
+          const data = response as O;
+
           setRequest({
             status: "success",
-            data: response,
+            data,
           });
 
-          return response;
+          return data;
         },
-        () => {
-          setRequest({ status: "failure" });
+        (e) => {
+          if (e instanceof ServerError) {
+            setRequest({
+              status: "failure",
+              code: e.code,
+            });
+          } else {
+            setRequest({
+              status: "failure",
+              code: 500,
+            });
+          }
+
+          return null;
         }
       );
   };
