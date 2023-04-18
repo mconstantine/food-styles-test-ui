@@ -52,13 +52,16 @@ export function Todo(props: Props) {
                 case "success":
                   return {
                     ...state,
-                    todos: state.todoList.todos.map((todo) => {
-                      if (todo.id === completedTodo.id) {
-                        return completedTodo;
-                      } else {
-                        return todo;
-                      }
-                    }),
+                    todoList: {
+                      ...state.todoList,
+                      todos: state.todoList.todos.map((todo) => {
+                        if (todo.id === completedTodo.id) {
+                          return completedTodo;
+                        } else {
+                          return todo;
+                        }
+                      }),
+                    },
                   };
               }
           }
@@ -77,13 +80,16 @@ export function Todo(props: Props) {
                 case "success":
                   return {
                     ...state,
-                    todos: state.todoList.todos.map((todo) => {
-                      if (todo.id === uncompletedTodo.id) {
-                        return uncompletedTodo;
-                      } else {
-                        return todo;
-                      }
-                    }),
+                    todoList: {
+                      ...state.todoList,
+                      todos: state.todoList.todos.map((todo) => {
+                        if (todo.id === uncompletedTodo.id) {
+                          return uncompletedTodo;
+                        } else {
+                          return todo;
+                        }
+                      }),
+                    },
                   };
               }
           }
@@ -105,9 +111,12 @@ export function Todo(props: Props) {
               case "success":
                 return {
                   ...state,
-                  todos: state.todoList.todos.filter(
-                    (todo) => todo.id !== deletedTodo.id
-                  ),
+                  todoList: {
+                    ...state.todoList,
+                    todos: state.todoList.todos.filter(
+                      (todo) => todo.id !== deletedTodo.id
+                    ),
+                  },
                 };
             }
         }

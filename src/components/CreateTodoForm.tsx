@@ -35,7 +35,10 @@ export function CreateTodoForm() {
               case "success":
                 return {
                   ...state,
-                  todos: [createdTodo, ...state.todoList.todos],
+                  todoList: {
+                    ...state.todoList,
+                    todos: [createdTodo, ...state.todoList.todos],
+                  },
                 };
               case "failure":
                 return state;
