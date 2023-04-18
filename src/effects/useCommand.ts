@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { apiUrl } from "../constants/apiUrl";
+import { AuthTokens } from "../state";
 
 type HttpCommandMethod = "POST" | "PUT" | "DELETE";
 
@@ -7,6 +8,7 @@ interface HttpCommand<T> {
   method: HttpCommandMethod;
   path: string;
   input: T;
+  authTokens?: AuthTokens | undefined;
 }
 
 interface IdleHttpRequest {
@@ -46,6 +48,9 @@ export function useCommand<I, O>(
         body: JSON.stringify(input),
         headers: {
           "Content-Type": "application/json",
+          ...(command.authTokens
+            ? { Authorization: `Bearer ${command.authTokens.access}` }
+            : {}),
         },
       })
       .then(

@@ -2,8 +2,8 @@ import { ChangeEventHandler, MouseEventHandler, useEffect } from "react";
 import "./Todo.css";
 import deleteTodoButtonImage from "../assets/delete-todo-button.svg";
 import { useCommand } from "../effects/useCommand";
-import { Todo as ITodo, appState } from "../state";
-import { useSetRecoilState } from "recoil";
+import { Todo as ITodo, appState, authTokensState } from "../state";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 
 interface Props {
   id: number;
@@ -13,16 +13,19 @@ interface Props {
 
 export function Todo(props: Props) {
   const setTodoListState = useSetRecoilState(appState);
+  const authTokens = useRecoilValue(authTokensState);
 
   const [deleteTodoRequest, deleteTodo] = useCommand<void, ITodo>({
     path: `/todos/${props.id}/`,
     method: "DELETE",
+    authTokens,
   });
 
   const [markTodoCompletedRequest, markTodoCompleted] = useCommand<void, ITodo>(
     {
       path: `/todos/${props.id}/mark-completed/`,
       method: "PUT",
+      authTokens,
     }
   );
 
@@ -32,6 +35,7 @@ export function Todo(props: Props) {
   >({
     path: `/todos/${props.id}/mark-uncompleted/`,
     method: "PUT",
+    authTokens,
   });
 
   const onChange: ChangeEventHandler<HTMLInputElement> = (event) => {

@@ -1,8 +1,8 @@
 import { FormEventHandler, useEffect, useState } from "react";
 import { TextInput } from "./TextInput";
 import { useCommand } from "../effects/useCommand";
-import { useSetRecoilState } from "recoil";
-import { Todo, appState } from "../state";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { Todo, appState, authTokensState } from "../state";
 
 interface CreateTodoInput {
   title: string;
@@ -11,10 +11,12 @@ interface CreateTodoInput {
 export function CreateTodoForm() {
   const [newTodoTitle, setNewTodoTitle] = useState("");
   const setTodoListState = useSetRecoilState(appState);
+  const authTokens = useRecoilValue(authTokensState);
 
   const [createTodoRequest, createTodo] = useCommand<CreateTodoInput, Todo>({
     path: "/todos/",
     method: "POST",
+    authTokens,
   });
 
   const onInputChange: FormEventHandler<HTMLInputElement> = (event) => {

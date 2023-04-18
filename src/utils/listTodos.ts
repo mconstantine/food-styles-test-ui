@@ -1,5 +1,5 @@
 import { apiUrl } from "../constants/apiUrl";
-import { Todo } from "../state";
+import { AuthTokens, Todo } from "../state";
 
 export enum ListTodosFilter {
   All = "all",
@@ -7,8 +7,15 @@ export enum ListTodosFilter {
   Incompleted = "uncompleted",
 }
 
-export function listTodos(filter: ListTodosFilter): Promise<Todo[]> {
+export function listTodos(
+  filter: ListTodosFilter,
+  authTokens: AuthTokens
+): Promise<Todo[]> {
   return window
-    .fetch(`${apiUrl}/todos/?filter=${filter}`)
+    .fetch(`${apiUrl}/todos/?filter=${filter}`, {
+      headers: {
+        Authorization: `Bearer ${authTokens.access}`,
+      },
+    })
     .then((response) => response.json());
 }

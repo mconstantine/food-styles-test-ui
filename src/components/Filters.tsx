@@ -1,34 +1,40 @@
-import { useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { ListTodosFilter, listTodos } from "../utils/listTodos";
 import "./Filters.css";
 import { MouseEventHandler, useState } from "react";
-import { appState } from "../state";
+import { appState, authTokensState } from "../state";
 
 export function Filters() {
   const setTodoListState = useSetRecoilState(appState);
+  const authTokens = useRecoilValue(authTokensState);
+
   const [currentFilter, setCurrentFilter] = useState<ListTodosFilter>(
     ListTodosFilter.All
   );
 
   const makeFilterClickCallback = (filter: ListTodosFilter) => {
     return () => {
-      listTodos(filter).then((todos) => {
-        setTodoListState((state) => {
-          switch (state.type) {
-            case "anonymous":
-              return state;
-            case "logged_in":
-              return {
-                ...state,
-                todoList: {
-                  status: "success",
-                  todos,
-                },
-              };
-          }
+      if (authTokens) {
+        listTodos(filter, authTokens).then((todos) => {
+          setTodoListState((state) => {
+            switch (state.type) {
+              case "anonymous":
+                return state;
+              case "logged_in":
+                return {
+                  ...state,
+                  todoList: {
+                    status: "success",
+                    todos,
+                  },
+                };
+            }
+          });
+          setCurrentFilter(filter);
         });
-        setCurrentFilter(filter);
-      });
+      } else {
+        return;
+      }
     };
   };
 
