@@ -96,14 +96,18 @@ export default function Login() {
           placeholder="Email"
           value={input.email}
           onChange={onEmailChange}
+          autoComplete="email"
           disabled={isUIDisabled}
+          required
         />
         <TextInput
           type="password"
           placeholder="Password"
           value={input.password}
           onChange={onPasswordChange}
+          autoComplete="password"
           disabled={isUIDisabled}
+          required
         />
         <p>
           <a href="#" onClick={onSignUpLinkClick}>

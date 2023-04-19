@@ -102,6 +102,7 @@ export default function SignUp() {
           onChange={onNameChange}
           autoComplete="name"
           disabled={isUIDisabled}
+          required
         />
         <TextInput
           type="email"
@@ -110,6 +111,7 @@ export default function SignUp() {
           onChange={onEmailChange}
           autoComplete="email"
           disabled={isUIDisabled}
+          required
         />
         <TextInput
           type="password"
@@ -118,6 +120,7 @@ export default function SignUp() {
           onChange={onPasswordChange}
           autoComplete="off"
           disabled={isUIDisabled}
+          required
         />
         <p>
           <a href="#" onClick={onLoginLinkClick}>
